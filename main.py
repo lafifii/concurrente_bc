@@ -1,4 +1,3 @@
-from crypt import methods
 from hashlib import sha256
 import hashlib
 import json
@@ -15,25 +14,17 @@ from urllib3 import proxy_from_url
 app = Flask(__name__)
 PoW = 4
 
-class Block:
-    def __init__(self, index, transactions, proof, previous_hash):
-        self.index = index 
-        self.timestamp = time.time()
-        self.transactions = transactions
-        self.proof = proof 
-        self.previous_hash = previous_hash
-
 class Blockchain:
     def __init__(self):
         self.chain = []
         self.current = []
 
-        self.new_block(previous_hash=1, proof=100)
+        self.newBlock(previous_hash=0, proof=0)
     
     def newBlock(self, proof, previous_hash=None):
         block = {
             'index': len(self.chain) + 1,
-            'tiimestamp': time.time(),
+            'timestamp': time.time(),
             'transactions': self.current,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1])
@@ -110,20 +101,20 @@ def new_transaction():
     fields = ['sender', 'recipient', 'amount']
     for f in fields:
         if not data.get(f):
-            return "Data invalida", 404
+            return "data invalida", 404
     
     index = blockchain.newTransaction(data['sender'], data['recipient'], data['amount'])
     
-    return "Agregando nueva transaccion a bloque " + str(index), 201
+    return "agregando nueva transaccion a bloque " + str(index), 201
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
         'chain': blockchain.chain,
-        'length': len(blockchain.chain),
+        'tamaño': len(blockchain.chain),
     }
 
     return jsonify(response), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1800)
+    app.run()
